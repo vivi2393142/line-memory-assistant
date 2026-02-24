@@ -1,0 +1,28 @@
+{
+  "name": "line-memory-assistant",
+  "version": "1.0.0",
+  "description": "LINE Memory Assistant - Personal knowledge management bot",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": ["line-bot", "memory", "assistant", "ai"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@line/bot-sdk": "^10.6.0",
+    "@supabase/supabase-js": "^2.97.1-canary.1",
+    "mem0ai": "^2.2.3",
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "@types/react": "^19.2.14",
+    "typescript": "^6.0.0-dev.20260222"
+  }
+}
