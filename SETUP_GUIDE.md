@@ -81,14 +81,13 @@ In **Messaging API** tab:
 4. Copy the contents of `supabase/schema.sql`
 5. Paste and click "Run"
 6. Confirm tables are created successfully
+7. Change all tables to 'restricted'
 
 ### Step 3: Get Credentials
 
 1. Click **Settings** (gear icon) on the left
-2. Select **API**
-3. Note down:
-   - **Project URL** (e.g., `https://xyz.supabase.co`)
-   - **anon/public key** (in Project API keys section)
+2. Copy **API Keys > Secret keys > default** to your `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
+3. Copy **Data API > API URL** to your `SUPABASE_ENDPOINT` in `.env.local`
 
 ---
 
