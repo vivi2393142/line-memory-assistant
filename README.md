@@ -4,9 +4,9 @@
 
 ## Features
 
-- 📝 **Auto-save**: All messages automatically stored as raw records
-- 🧠 **Structured Memory Search**: Upgrade to searchable, organized memories using semantic search
-- 🤖 **Low-interference**: No auto-reply, only responds to specific keywords
+- **Auto-save**: All messages automatically stored as raw records
+- **Structured Memory Search**: Upgrade to searchable, organized memories using semantic search
+- **Low-interference**: No auto-reply, only responds to specific keywords
 
 ## Commands
 
@@ -20,7 +20,7 @@
 | `查 <question>`             | `找`, `搜尋`, `search`           | Search memories                 |
 | `help`                      | `怎麼用`, `幫助`                 | Show help message               |
 
-## 🏗️ System Architecture
+## System Architecture
 
 ### Layered Design
 
@@ -57,7 +57,7 @@ User Message → Save to Raw DB → Parse Command
 Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Sources → Reply
 ```
 
-## 📦 Tech Stack
+## Tech Stack
 
 | Layer            | Technology        | Description                    |
 | ---------------- | ----------------- | ------------------------------ |
@@ -69,9 +69,9 @@ Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Source
 | LLM              | Google Gemini     | Free API quota (60 req/min)    |
 | LINE             | @line/bot-sdk     | Official SDK                   |
 
-**Cost: Completely Free** 🎉
+**Cost: Completely Free**
 
-## 🚀 Quick Start
+## Quick Start
 
 See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for complete setup instructions.
 
@@ -95,7 +95,7 @@ vercel --prod
 # https://your-project.vercel.app/api/webhook
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 <!-- TODO: need to be updated -->
 
@@ -119,7 +119,7 @@ line-memory-assistant/
 └── supabase/schema.sql            # Database schema
 ```
 
-## 💡 Design Philosophy
+## Design Philosophy
 
 ### Default No-Reply
 
@@ -147,7 +147,7 @@ Every memory retains a reference to the original message:
 - Can trace back to the complete original message
 - Prevents information loss from AI summarization
 
-## 🔧 Database Design
+## Database Design
 
 ### messages (raw messages)
 
@@ -185,7 +185,7 @@ Using mem0 hosted service, metadata includes:
 - `group_id`: Group ID
 - `created_at`: Creation timestamp
 
-## 📝 Future Features (Phase 2+)
+## Future Features (Phase 2+)
 
 - [ ] List all memories (Flex Message UI)
 - [ ] Delete memories
@@ -195,7 +195,7 @@ Using mem0 hosted service, metadata includes:
 - [ ] Memory conflict detection
 - [ ] Search result reranking
 
-## 🐛 Debugging Tips
+## Debugging Tips
 
 ### Check Webhook Status
 
@@ -218,7 +218,7 @@ In Supabase Dashboard > SQL Editor:
 SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
 ```
 
-## 📚 References
+## References
 
 - [LINE Messaging API Documentation](https://developers.line.biz/en/docs/messaging-api/)
 - [mem0 Documentation](https://docs.mem0.ai/)
@@ -226,10 +226,6 @@ SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
 - [Supabase Documentation](https://supabase.com/docs)
 - [Google AI (Gemini) Documentation](https://ai.google.dev/docs)
 
-## 📄 License
+## License
 
 MIT
-
----
-
-**Enjoy your intelligent memory assistant!** 🚀
