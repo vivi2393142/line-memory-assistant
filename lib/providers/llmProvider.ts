@@ -1,24 +1,24 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Memory } from '@/lib/types';
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import { Memory } from '@/lib/types'
 
 export class LLMProvider {
-  private genAI: GoogleGenerativeAI;
-  private model;
+  private genAI: GoogleGenerativeAI
+  private model
 
   constructor() {
-    const apiKey = process.env.GEMINI_API_KEY!;
-    
+    const apiKey = process.env.GEMINI_API_KEY!
+
     if (!apiKey) {
-      throw new Error('Missing Gemini API key');
+      throw new Error('Missing Gemini API key')
     }
 
-    this.genAI = new GoogleGenerativeAI(apiKey);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+    this.genAI = new GoogleGenerativeAI(apiKey)
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' })
   }
 
   /**
-   * 生成乾淨的記憶內容
-   * 移除無關字詞、整理格式，保留核心資訊
+   * Generate clean memory content
+   * Remove irrelevant words, organize format, keep core information
    */
   async generateCleanContent(rawText: string): Promise<string> {
     const prompt = `
@@ -37,26 +37,26 @@ export class LLMProvider {
 ${rawText}
 
 整理後的內容：
-`.trim();
+`.trim()
 
-    const result = await this.model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return text.trim();
+    const result = await this.model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
+
+    return text.trim()
   }
 
   /**
-   * 根據查詢和記憶生成回答
+   * Generate answer based on query and memories
    */
   async generateAnswer(query: string, memories: Memory[]): Promise<string> {
     if (memories.length === 0) {
-      return '找不到相關的記憶 🤔';
+      return '找不到相關的記憶 🤔'
     }
 
     const memoryContext = memories
       .map((m, i) => `[${i + 1}] ${m.content}`)
-      .join('\n\n');
+      .join('\n\n')
 
     const prompt = `
 你是一個記憶查詢助手。根據使用者的問題和相關記憶，提供簡潔的回答。
@@ -76,12 +76,12 @@ ${query}
 ${memoryContext}
 
 回答：
-`.trim();
+`.trim()
 
-    const result = await this.model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return text.trim();
+    const result = await this.model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
+
+    return text.trim()
   }
 }

@@ -1,212 +1,183 @@
-# 外部服務設定指南
+# Setup Guide
 
-本文件詳細說明如何設定所有需要的外部服務。
+Complete guide for setting up all required external services.
 
-## 📋 設定檢查清單
+## 📋 Setup Checklist
 
 - [ ] LINE Messaging API
 - [ ] Supabase Database
 - [ ] mem0 Account
 - [ ] Google Gemini API
-- [ ] 本地環境變數設定
+- [ ] Local Environment Variables
 
 ---
 
-## 1. LINE Messaging API 設定
+## 1. LINE Messaging API Setup
 
-### 步驟 1：創建 Provider
+### Step 1: Create Provider
 
-1. 前往 [LINE Developers Console](https://developers.line.biz/console/)
-2. 登入你的 LINE 帳號
-3. 點擊 "Create a new provider"
-4. 輸入 Provider name（例如：`My Personal Projects`）
+1. Go to [LINE Developers Console](https://developers.line.biz/console/)
+2. Sign in with your LINE account
+3. Click "Create a new provider"
+4. Enter Provider name (e.g., `My Personal Projects`)
 
-### 步驟 2：創建 Channel
+### Step 2: Create Channel
 
-1. 在 Provider 頁面，點擊 "Create a Messaging API channel"
-2. 填寫以下資訊：
-   - **Channel name**: `Memory Assistant`（或任何你喜歡的名稱）
+1. On the Provider page, click "Create a Messaging API channel"
+2. Fill in the following information:
+   - **Channel name**: `Memory Assistant` (or any name you prefer)
    - **Channel description**: `Personal memory management bot`
-   - **Category**: `Utilities` 或適合的分類
-   - **Subcategory**: 選擇適合的子分類
-3. 同意條款並創建
+   - **Category**: `Utilities` or appropriate category
+   - **Subcategory**: Select appropriate subcategory
+3. Agree to terms and create
 
-### 步驟 3：取得 Credentials
+### Step 3: Get Credentials
 
-1. 進入你剛創建的 Channel
-2. 前往 **Messaging API** 標籤
-3. 找到並記下：
-   - **Channel access token** (長期):
-     - 點擊 "Issue" 按鈕
-     - 複製產生的 token（例如：`abc123xyz...`）
-   - **Channel secret**:
-     - 在 **Basic settings** 標籤中
-     - 複製 Channel secret
+1. Enter your newly created Channel
+2. Go to **Messaging API** tab in LINE Developers
+3. Find and note down:
+   - **Channel access token** (long-term):
+     - Click "Issue" button
+     - Copy the generated token (e.g., `abc123xyz...`)
 
-### 步驟 4：基本設定
+### Step 4: Basic Configuration
 
-在 **Messaging API** 標籤中：
+In **Messaging API** tab:
 
 1. **Webhook settings**:
-   - 暫時先不設定（部署後再設定）
-   - 確保 "Use webhook" 是關閉的
+   - Don't configure yet (set after deployment)
+   - Ensure "Use webhook" is disabled
 
 2. **Auto-reply messages**:
-   - 停用自動回覆訊息（避免干擾）
+   - Disable auto-reply messages (to avoid interference)
 
 3. **Greeting messages**:
-   - 可以自訂或停用
+   - Customize or disable as needed
 
 4. **Allow bot to join group chats**:
-   - 啟用（重要！）
+   - Enable (Important!)
 
 ---
 
-## 2. Supabase Database 設定
+## 2. Supabase Database Setup
 
-### 步驟 1：創建專案
+### Step 1: Create Project
 
-1. 前往 [Supabase](https://supabase.com/)
-2. 點擊 "Start your project"
-3. 登入（可使用 GitHub 帳號）
-4. 點擊 "New project"
-5. 填寫資訊：
+1. Go to [Supabase](https://supabase.com/)
+2. Click "Start your project"
+3. Sign in (can use GitHub account)
+4. Click "New project"
+5. Fill in information:
    - **Name**: `line-memory-assistant`
-   - **Database Password**: 設定一個強密碼（記下來）
-   - **Region**: 選擇離你最近的（例如：Northeast Asia (Tokyo)）
+   - **Database Password**: Set a strong password (save it)
+   - **Region**: Choose closest to you (e.g., Northeast Asia (Tokyo))
    - **Pricing Plan**: Free
 
-### 步驟 2：建立資料表
+### Step 2: Create Tables
 
-1. 等待專案初始化完成（約 1-2 分鐘）
-2. 進入專案後，點擊左側 **SQL Editor**
-3. 點擊 "New query"
-4. 複製 `supabase/schema.sql` 的內容
-5. 貼上並點擊 "Run"
-6. 確認資料表建立成功
+1. Wait for project initialization (about 1-2 minutes)
+2. After entering project, click **SQL Editor** on the left
+3. Click "New query"
+4. Copy the contents of `supabase/schema.sql`
+5. Paste and click "Run"
+6. Confirm tables are created successfully
 
-### 步驟 3：取得 Credentials
+### Step 3: Get Credentials
 
-1. 點擊左側 **Settings** (齒輪圖示)
-2. 選擇 **API**
-3. 記下：
-   - **Project URL**（例如：`https://xyz.supabase.co`）
-   - **anon/public key**（在 Project API keys 區塊）
-
----
-
-## 3. mem0 設定
-
-### 步驟 1：註冊帳號
-
-1. 前往 [mem0.ai](https://app.mem0.ai/)
-2. 點擊 "Sign Up"
-3. 使用 Email 或 Google 帳號註冊
-
-### 步驟 2：選擇方案
-
-1. 登入後，選擇 **Hobby Plan**（免費）
-2. 完成設定
-
-### 步驟 3：取得 API Key
-
-1. 前往 Dashboard
-2. 點擊 **Settings** 或 **API Keys**
-3. 點擊 "Create new API key"
-4. 複製並安全保存 API Key
+1. Click **Settings** (gear icon) on the left
+2. Select **API**
+3. Note down:
+   - **Project URL** (e.g., `https://xyz.supabase.co`)
+   - **anon/public key** (in Project API keys section)
 
 ---
 
-## 4. Google Gemini API 設定
+## 3. mem0 Setup
 
-### 步驟 1：前往 Google AI Studio
+### Step 1: Register Account
 
-1. 前往 [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. 使用你的 Google 帳號登入
+1. Go to [mem0.ai](https://app.mem0.ai/)
+2. Click "Sign Up"
+3. Register with Email or Google account
 
-### 步驟 2：創建 API Key
+### Step 2: Choose Plan
 
-1. 點擊 "Create API Key"
-2. 選擇或創建一個 Google Cloud Project
-   - 如果沒有專案，點擊 "Create API key in new project"
-3. 複製產生的 API Key
+1. After logging in, select **Hobby Plan** (free)
+2. Complete setup
 
-### 步驟 3：確認免費額度
+### Step 3: Get API Key
 
-- Gemini API 提供免費額度：
-  - 每分鐘 60 requests
-  - 每天 1,500 requests
-- 對於個人使用完全足夠
+1. Go to **API Keys**
+2. Copy and securely save the API Key. If not exist, create one.
 
 ---
 
-## 5. 環境變數設定
+## 4. Google Gemini API Setup
 
-### 本地開發
+### Step 1: Go to Google AI Studio
 
-1. 在專案根目錄創建 `.env.local` 檔案：
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
 
-```bash
-cp .env.example .env.local
-```
+### Step 2: Create API Key
 
-2. 編輯 `.env.local`，填入所有 credentials：
+1. Click "Create API Key"
+2. Select or create a Google Cloud Project
+   - If no project exists, click "Create API key in new project"
+3. Copy the generated API Key
 
-```env
-# LINE Messaging API
-LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token_here
-LINE_CHANNEL_SECRET=your_line_channel_secret_here
+### Step 3: Verify Free Quota
 
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key_here
-
-# mem0
-MEM0_API_KEY=your_mem0_api_key_here
-
-# Google Gemini API
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# App Configuration
-PENDING_EXPIRY_MINUTES=30
-```
-
-3. 確認 `.env.local` 在 `.gitignore` 中（已預設包含）
-
-### Vercel 部署
-
-部署到 Vercel 時，需要在 Vercel Dashboard 設定環境變數：
-
-1. 前往 Vercel Dashboard
-2. 選擇你的專案
-3. 進入 **Settings** > **Environment Variables**
-4. 逐一添加上述所有變數
-5. Environment: 選擇 **Production, Preview, Development** (全選)
+- Gemini API provides free quota:
+  - 60 requests per minute
+  - 1,500 requests per day
+- Completely sufficient for personal use
 
 ---
 
-## 6. 測試連線
+## 5. Environment Variables Setup
 
-### 測試 Supabase
+### Local Development
 
-在 Supabase Dashboard > SQL Editor 執行：
+1. Create `.env.local` file in project root:
+2. Edit `.env.local`, fill in all credentials based on `.env.example`
+3. Verify `.env.local` is in `.gitignore` (already included by default)
+
+### Vercel Deployment
+
+When deploying to Vercel, set environment variables in Vercel Dashboard:
+
+1. Go to Vercel Dashboard
+2. Select your project
+3. Go to **Settings** > **Environment Variables**
+4. Add all variables above one by one
+5. Environment: Select **Production, Preview, Development** (all)
+
+---
+
+## 6. Test Connections
+
+### Test Supabase
+
+In Supabase Dashboard > SQL Editor:
 
 ```sql
 SELECT * FROM messages LIMIT 1;
 SELECT * FROM pending_actions LIMIT 1;
 ```
 
-應該返回空結果（因為還沒資料），但不應該有錯誤。
+Should return empty results (no data yet), but no errors.
 
-### 測試 Next.js
+### Test Next.js
 
 ```bash
 npm run dev
 ```
 
-訪問 `http://localhost:3000/api/webhook`
+Visit `http://localhost:3000/api/webhook`
 
-應該看到：
+Should see:
+
 ```json
 {
   "status": "ok",
@@ -217,38 +188,72 @@ npm run dev
 
 ---
 
-## ⚠️ 常見問題
+## 7. Deploy to Vercel
 
-### LINE Bot 無法加入群組
+### Install Vercel CLI
 
-- 確認在 LINE Developers Console 中啟用了 "Allow bot to join group chats"
+```bash
+npm i -g vercel
+```
 
-### Supabase 連線失敗
+### Deploy
 
-- 檢查 URL 格式是否正確（包含 `https://`）
-- 確認使用的是 **anon/public key**，不是 service_role key
+```bash
+# Login to Vercel
+vercel login
 
-### mem0 API 錯誤
+# Deploy to preview
+vercel
 
-- 確認 API Key 沒有多餘的空格
-- 檢查是否超過免費額度限制
+# After verifying everything works, deploy to production
+vercel --prod
+```
 
-### Gemini API 錯誤
+### Configure Environment Variables
 
-- 確認 API Key 是否有效
-- 檢查是否啟用了 Gemini API
-- 確認沒有超過免費額度
+1. Go to Vercel Dashboard
+2. Select your project
+3. Settings > Environment Variables
+4. Add all variables from `.env.local`
+5. Choose environments: Production, Preview, Development
+
+### Update LINE Webhook URL
+
+1. Go to LINE Developers Console
+2. Update Webhook URL to: `https://your-project.vercel.app/api/webhook`
+3. Enable "Use webhook"
+4. Verify webhook connection
 
 ---
 
-## 🎉 完成！
+## 8. Add Bot to LINE Group
 
-所有服務設定完成後，你就可以：
+### Step 1: Add Bot as Friend
 
-1. 啟動本地開發：`npm run dev`
-2. 使用 ngrok 測試 webhook
-3. 部署到 Vercel
-4. 將 Bot 加入你的 LINE 群組
-5. 開始使用！
+1. In LINE Developers Console, go to your channel
+2. In **Messaging API** tab, find the QR code
+3. Scan with LINE app to add bot as friend
 
-下一步：參考 [README.md](./README.md) 的「部署指南」章節。
+### Step 2: Create Personal Group
+
+1. Create a new LINE group with only yourself
+2. Name it something like "My Memory"
+
+### Step 3: Invite Bot
+
+1. In the group, tap group name → Members
+2. Tap "Invite"
+3. Select your Memory Assistant bot
+4. Start using!
+
+---
+
+## 9. Test Functionality
+
+Send these test messages in your LINE group:
+
+1. **Send any message** → Should not reply, but saved to database
+2. **Send** `help` → Should show help message
+3. **Send** `幫我記 test content` → Should show preview
+4. **Reply** `確認` → Should save memory
+5. **Send** `查 test` → Should find and return the memory

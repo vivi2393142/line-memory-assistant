@@ -1,269 +1,224 @@
 # LINE Memory Assistant
 
-一個可加入 LINE 群組的個人記憶助手 Bot，具備自動儲存、語意搜尋和長期記憶管理功能。
+> A personal memory assistant bot for LINE groups with automatic storage, semantic search, and long-term memory management.
 
-## ✨ 功能特色
+## Features
 
-- 📝 **自動儲存**：所有訊息自動儲存為原始記錄
-- 🧠 **長期記憶**：支援升級為可搜尋的結構化記憶
-- 🔍 **語意搜尋**：使用 AI 進行智慧查詢
-- ✅ **確認機制**：記憶儲存前可預覽和確認
-- 🤖 **低干擾**：預設不回覆，僅固定關鍵字觸發
+- 📝 **Auto-save**: All messages automatically stored as raw records
+- 🧠 **Structured Memory Search**: Upgrade to searchable, organized memories using semantic search
+- 🤖 **Low-interference**: No auto-reply, only responds to specific keywords
 
-## 🎯 使用指令
+## Commands
 
-| 指令 | 功能 |
-|------|------|
-| `幫我記 <內容>` | 儲存當下內容為記憶 |
-| `存上一則` | 儲存最近一則訊息 |
-| 回覆訊息 + `幫我記` | 儲存被回覆的訊息 |
-| `確認` | 確認儲存待確認的記憶 |
-| `取消` | 取消待確認的記憶 |
-| `查 <問題>` | 搜尋相關記憶 |
-| `help` / `怎麼用` | 顯示使用說明 |
+| Command                     | Aliases                          | Function                        |
+| --------------------------- | -------------------------------- | ------------------------------- |
+| `幫我記 <content>`          | `記一下`, `記錄`, `save`, `儲存` | Save current content as memory  |
+| `存上一則`                  | `存最後一則`                     | Save the most recent message    |
+| Reply to message + `幫我記` | -                                | Save the replied message        |
+| `確認儲存記憶`              | -                                | Confirm and save pending memory |
+| `取消儲存記憶`              | -                                | Cancel pending memory           |
+| `查 <question>`             | `找`, `搜尋`, `search`           | Search memories                 |
+| `help`                      | `怎麼用`, `幫助`                 | Show help message               |
 
-## 🏗️ 技術架構
+## 🏗️ System Architecture
+
+### Layered Design
 
 ```
 LINE Webhook
      ↓
-Command Parser (純規則判斷)
+Command Parser (rule-based only)
      ↓
 Service Layer
+  ├─ CaptureService (memory capture)
+  ├─ QueryService (search)
+  └─ HelpService (help)
      ↓
-Provider Layer (可抽換)
+Provider Layer (swappable)
   ├─ LINEProvider
   ├─ LLMProvider (Gemini)
   ├─ MemoryProvider (mem0)
   └─ StorageProvider (Supabase)
 ```
 
-## 📦 技術選型
+### Memory Upgrade Flow
 
-| 層級 | 技術 | 說明 |
-|------|------|------|
-| 語言 | TypeScript | 型別安全 |
-| 框架 | Next.js 14 | Serverless API Routes |
-| Hosting | Vercel Hobby | 免費部署 |
-| 資料庫 | Supabase Postgres | 免費額度 |
-| 長期記憶 | mem0 | Hosted memory service |
-| LLM | Google Gemini | 免費 API 額度 |
-| LINE | @line/bot-sdk | 官方 SDK |
+```
+User Message → Save to Raw DB → Parse Command
+                                      ↓
+              Keyword Triggered → LLM Cleans Content → Create Pending
+                                                          ↓
+              User Confirms → Write to mem0 → Complete
+```
 
-## 🚀 部署指南
+### Query Flow
 
-### 1. 準備外部服務
+```
+Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Sources → Reply
+```
 
-#### LINE Developers
-1. 前往 [LINE Developers Console](https://developers.line.biz/console/)
-2. 創建 Messaging API Channel
-3. 記下：
-   - Channel Access Token
-   - Channel Secret
+## 📦 Tech Stack
 
-#### Supabase
-1. 前往 [Supabase](https://supabase.com/)
-2. 創建新專案（免費）
-3. 執行 `supabase/schema.sql` 建立資料表
-4. 記下：
-   - Project URL
-   - anon/public key
+| Layer            | Technology        | Description                    |
+| ---------------- | ----------------- | ------------------------------ |
+| Language         | TypeScript        | Type-safe                      |
+| Framework        | Next.js 14        | Serverless API Routes          |
+| Hosting          | Vercel Hobby      | Free deployment (100 GB/month) |
+| Database         | Supabase Postgres | Free tier (500 MB)             |
+| Long-term Memory | mem0              | Hosted memory service          |
+| LLM              | Google Gemini     | Free API quota (60 req/min)    |
+| LINE             | @line/bot-sdk     | Official SDK                   |
 
-#### mem0
-1. 前往 [mem0.ai](https://app.mem0.ai/)
-2. 註冊並選擇 Hobby tier（免費）
-3. 記下 API Key
+**Cost: Completely Free** 🎉
 
-#### Google Gemini
-1. 前往 [Google AI Studio](https://makersuite.google.com/)
-2. 創建 API Key（免費額度）
-3. 記下 API Key
+## 🚀 Quick Start
 
-### 2. 本地開發
+See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for complete setup instructions.
+
+### Quick Steps
 
 ```bash
-# 安裝依賴
+# 1. Install dependencies
 npm install
 
-# 複製環境變數範本
+# 2. Setup environment variables
 cp .env.example .env.local
+# Edit .env.local with your API keys
 
-# 編輯 .env.local，填入你的 API keys
-# LINE_CHANNEL_ACCESS_TOKEN=...
-# LINE_CHANNEL_SECRET=...
-# SUPABASE_URL=...
-# SUPABASE_ANON_KEY=...
-# MEM0_API_KEY=...
-# GEMINI_API_KEY=...
-# PENDING_EXPIRY_MINUTES=30
+# 3. Run SQL schema in Supabase
+# Execute supabase/schema.sql in Supabase SQL Editor
 
-# 啟動開發伺服器
-npm run dev
-```
-
-### 3. 使用 ngrok 測試 Webhook
-
-```bash
-# 安裝 ngrok（如果還沒安裝）
-# macOS: brew install ngrok
-# 或前往 https://ngrok.com/ 下載
-
-# 啟動 ngrok
-ngrok http 3000
-
-# 複製 ngrok 提供的 HTTPS URL（例如：https://abc123.ngrok.io）
-# 前往 LINE Developers Console
-# 設定 Webhook URL: https://abc123.ngrok.io/api/webhook
-# 啟用 "Use webhook"
-```
-
-### 4. 部署到 Vercel
-
-```bash
-# 安裝 Vercel CLI
-npm i -g vercel
-
-# 登入 Vercel
-vercel login
-
-# 部署
-vercel
-
-# 設定環境變數
-# 前往 Vercel Dashboard > Settings > Environment Variables
-# 添加所有 .env.local 中的變數
-
-# 生產環境部署
+# 4. Deploy to Vercel
 vercel --prod
 
-# 複製 Vercel 提供的 URL
-# 前往 LINE Developers Console
-# 更新 Webhook URL: https://your-project.vercel.app/api/webhook
+# 5. Configure LINE Webhook URL
+# https://your-project.vercel.app/api/webhook
 ```
 
-### 5. 將 Bot 加入群組
+## 📂 Project Structure
 
-1. 在 LINE Developers Console 取得 QR Code
-2. 掃描加入 Bot 為好友
-3. 建立一個只有你自己的群組
-4. 邀請 Bot 加入群組
-5. 開始使用！
-
-## 📂 專案結構
+<!-- TODO: need to be updated -->
 
 ```
 line-memory-assistant/
 ├── app/
-│   └── api/
-│       └── webhook/
-│           └── route.ts         # LINE webhook endpoint
+│   └── api/webhook/route.ts      # LINE webhook endpoint
 ├── lib/
-│   ├── types/
-│   │   └── index.ts             # TypeScript 型別定義
+│   ├── types/index.ts             # TypeScript type definitions
 │   ├── parsers/
-│   │   └── commandParser.ts     # 指令解析器
-│   ├── providers/
-│   │   ├── lineProvider.ts      # LINE API 封裝
-│   │   ├── llmProvider.ts       # Gemini AI 封裝
-│   │   ├── memoryProvider.ts    # mem0 封裝
-│   │   └── storageProvider.ts   # Supabase 封裝
-│   └── services/
-│       ├── captureService.ts    # 記憶捕捉服務
-│       ├── queryService.ts      # 查詢服務
-│       └── helpService.ts       # 說明服務
-├── supabase/
-│   └── schema.sql               # 資料庫 schema
-├── .env.example                 # 環境變數範本
-├── package.json
-├── tsconfig.json
-└── next.config.js
+│   │   └── commandParser.ts       # Command parser
+│   ├── providers/                 # Swappable third-party wrappers
+│   │   ├── lineProvider.ts
+│   │   ├── llmProvider.ts
+│   │   ├── memoryProvider.ts
+│   │   └── storageProvider.ts
+│   └── services/                  # Business logic
+│       ├── captureService.ts
+│       ├── queryService.ts
+│       └── helpService.ts
+└── supabase/schema.sql            # Database schema
 ```
 
-## 🔧 開發說明
+## 💡 Design Philosophy
 
-### 資料庫 Schema
+### Default No-Reply
 
-**messages** - 原始訊息儲存
+Unlike typical chatbots, this bot is designed for "low interference":
+
+- All messages auto-saved as raw records
+- Only specific keywords trigger replies
+- Perfect for personal note-taking without interrupting conversations
+
+### Two-Stage Memory
+
+**Raw Records** (automatic) → **Long-term Memory** (manual confirmation)
+
+This design allows you to:
+
+- Record everything without worry
+- Only upgrade important content to searchable memory
+- Preview and edit before upgrading
+
+### Traceability
+
+Every memory retains a reference to the original message:
+
+- Query results include sources
+- Can trace back to the complete original message
+- Prevents information loss from AI summarization
+
+## 🔧 Database Design
+
+### messages (raw messages)
+
 ```sql
-- id (UUID)
-- user_id (VARCHAR)
-- group_id (VARCHAR, nullable)
-- line_message_id (VARCHAR, unique)
-- quoted_message_id (VARCHAR, nullable)
-- content (TEXT)
-- created_at (TIMESTAMP)
+- id: UUID
+- user_id: VARCHAR
+- group_id: VARCHAR (nullable)
+- line_message_id: VARCHAR (unique)
+- quoted_message_id: VARCHAR (nullable)
+- content: TEXT
+- created_at: TIMESTAMP
 ```
 
-**pending_actions** - 待確認記憶
+### pending_actions (pending memories)
+
 ```sql
-- id (UUID)
-- user_id (VARCHAR)
-- group_id (VARCHAR, nullable)
-- action_type (VARCHAR)
-- draft_content (TEXT)
-- raw_id (UUID, FK to messages)
-- expires_at (TIMESTAMP)
-- created_at (TIMESTAMP)
+- id: UUID
+- user_id: VARCHAR
+- group_id: VARCHAR (nullable)
+- action_type: VARCHAR (fixed as 'add_memory')
+- draft_content: TEXT (LLM-cleaned content)
+- raw_id: UUID (FK to messages)
+- expires_at: TIMESTAMP (expires after 30 minutes)
+- created_at: TIMESTAMP
+
+UNIQUE(user_id, group_id)  -- Each user can only have one pending
 ```
 
-### 指令解析順序
+### mem0 (long-term memory)
 
-1. `存上一則` (exact match)
-2. `確認` (exact match)
-3. `取消` (exact match)
-4. `幫我記` (prefix)
-5. `查 ` (prefix)
-6. `help` / `怎麼用` (exact match)
-7. 其他 → 僅存 Raw，不回覆
+Using mem0 hosted service, metadata includes:
 
-## 💰 成本控制
+- `raw_id`: Original message ID
+- `user_id`: User ID
+- `group_id`: Group ID
+- `created_at`: Creation timestamp
 
-所有服務都使用免費方案：
+## 📝 Future Features (Phase 2+)
 
-- **Vercel Hobby**: 免費（100 GB 流量/月）
-- **Supabase Free**: 500 MB 資料庫 + 1 GB 檔案儲存
-- **mem0 Hobby**: 免費（有使用量限制）
-- **Gemini API**: 免費額度（60 requests/min）
+- [ ] List all memories (Flex Message UI)
+- [ ] Delete memories
+- [ ] Tag system
+- [ ] Batch upgrade Raw → Memory
+- [ ] Web Dashboard for querying
+- [ ] Memory conflict detection
+- [ ] Search result reranking
 
-預估個人使用：**完全免費** 🎉
+## 🐛 Debugging Tips
 
-## 🔐 安全注意事項
+### Check Webhook Status
 
-1. **永遠不要**將 `.env.local` 或 `.env` 提交到 Git
-2. 在 Vercel 設定環境變數時，選擇適當的環境（Production/Preview/Development）
-3. LINE Webhook 會驗證簽名，確保請求來自 LINE
-4. Supabase 可啟用 Row Level Security (RLS) 增加安全性
-
-## 📝 待辦功能（Phase 2+）
-
-- [ ] 列出所有記憶（Flex Message UI）
-- [ ] 刪除記憶
-- [ ] Tag 系統
-- [ ] 批次升級 Raw → Memory
-- [ ] Web Dashboard
-- [ ] 記憶衝突偵測
-- [ ] 搜尋 rerank
-
-## 🐛 除錯技巧
-
-### 檢查 Webhook 狀態
 ```bash
 curl https://your-project.vercel.app/api/webhook
-# 應該返回: {"status":"ok","service":"LINE Memory Assistant","version":"1.0.0"}
+# Should return: {"status":"ok","service":"LINE Memory Assistant","version":"1.0.0"}
 ```
 
-### 查看 Vercel 日誌
+### View Vercel Logs
+
 ```bash
 vercel logs
 ```
 
-### 測試資料庫連線
-在 Supabase Dashboard > SQL Editor 執行：
+### Test Database Connection
+
+In Supabase Dashboard > SQL Editor:
+
 ```sql
 SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
 ```
 
-## 📚 參考資源
+## 📚 References
 
 - [LINE Messaging API Documentation](https://developers.line.biz/en/docs/messaging-api/)
 - [mem0 Documentation](https://docs.mem0.ai/)
@@ -275,10 +230,6 @@ SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
 
 MIT
 
-## 👤 Author
-
-Created as a personal side project for knowledge management.
-
 ---
 
-**享受你的智慧記憶助手！** 🚀
+**Enjoy your intelligent memory assistant!** 🚀

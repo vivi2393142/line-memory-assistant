@@ -1,207 +1,252 @@
-import { StorageProvider } from '@/lib/providers/storageProvider';
-import { LLMProvider } from '@/lib/providers/llmProvider';
-import { MemoryProvider } from '@/lib/providers/memoryProvider';
-import { ServiceResponse } from '@/lib/types';
+import { StorageProvider } from '@/lib/providers/storageProvider'
+import { LLMProvider } from '@/lib/providers/llmProvider'
+import { MemoryProvider } from '@/lib/providers/memoryProvider'
+import { ServiceResponse } from '@/lib/types'
+import { CommandType } from '@/lib/types'
+import { COMMAND_ALIASES } from '@/lib/constants/commands'
+import { CAPTURE_MESSAGES } from '@/lib/constants/captureMessages'
+import type { Message } from '@line/bot-sdk'
 
 export class CaptureService {
-  private storage: StorageProvider;
-  private llm: LLMProvider;
-  private memory: MemoryProvider;
+  private storage: StorageProvider
+  private llm: LLMProvider
+  private memory: MemoryProvider
 
   constructor(
     storage: StorageProvider,
     llm: LLMProvider,
-    memory: MemoryProvider
+    memory: MemoryProvider,
   ) {
-    this.storage = storage;
-    this.llm = llm;
-    this.memory = memory;
+    this.storage = storage
+    this.llm = llm
+    this.memory = memory
   }
 
   /**
-   * 處理「幫我記 <內容>」
+   * Handle "幫我記 <content>"
    */
   async saveNow(
     userId: string,
     groupId: string | null,
     content: string,
-    rawId: string
+    rawId: string,
   ): Promise<ServiceResponse> {
     try {
-      // 1. 生成 content_clean
-      const cleanContent = await this.llm.generateCleanContent(content);
+      // 1. Generate content_clean
+      const cleanContent = await this.llm.generateCleanContent(content)
 
-      // 2. 建立 PendingAction
-      const expiryMinutes = parseInt(process.env.PENDING_EXPIRY_MINUTES || '30');
-      const expiresAt = new Date();
-      expiresAt.setMinutes(expiresAt.getMinutes() + expiryMinutes);
+      // 2. Create PendingAction
+      const expiryMinutes = parseInt(process.env.PENDING_EXPIRY_MINUTES || '30')
+      const expiresAt = new Date()
+      expiresAt.setMinutes(expiresAt.getMinutes() + expiryMinutes)
 
-      const pending = await this.storage.createPendingAction({
+      await this.storage.createPendingAction({
         user_id: userId,
         group_id: groupId,
         action_type: 'add_memory',
         draft_content: cleanContent,
         raw_id: rawId,
         expires_at: expiresAt.toISOString(),
-      });
+      })
 
-      // 3. 回覆預覽
-      const previewMessage = `📝 確認要儲存這則記憶嗎？\n\n${cleanContent}\n\n回覆「確認」儲存，或「取消」放棄。`;
+      // 3. Get confirm and cancel aliases from constants
+      const confirmAlias = COMMAND_ALIASES[CommandType.PENDING_CONFIRM][0]
+      const cancelAlias = COMMAND_ALIASES[CommandType.PENDING_CANCEL][0]
+
+      // 4. Build message with quick reply buttons
+      const messageWithQuickReply: Message = {
+        type: 'text',
+        text: `${CAPTURE_MESSAGES.SAVE_NOW_CONFIRM_TEXT}\n\n${cleanContent}`,
+        quickReply: {
+          items: [
+            {
+              type: 'action',
+              action: {
+                type: 'message',
+                label: '確認',
+                text: confirmAlias,
+              },
+            },
+            {
+              type: 'action',
+              action: {
+                type: 'message',
+                label: '取消',
+                text: cancelAlias,
+              },
+            },
+          ],
+        },
+      }
 
       return {
         success: true,
-        message: previewMessage,
-      };
+        message: messageWithQuickReply,
+      }
     } catch (error) {
-      console.error('SaveNow error:', error);
+      console.error('SaveNow error:', error)
       return {
         success: false,
-        message: '處理失敗，請稍後再試 😢',
-      };
+        message: CAPTURE_MESSAGES.SAVE_NOW_ERROR,
+      }
     }
   }
 
   /**
-   * 處理「存上一則」
+   * Handle "存上一則"
    */
   async savePrevious(
     userId: string,
     groupId: string | null,
-    currentRawId: string
+    currentRawId: string,
   ): Promise<ServiceResponse> {
     try {
-      // 1. 取得最近一筆 Raw（排除當前訊息）
-      const latestMessage = await this.storage.getLatestRawMessage(userId, groupId);
+      // 1. Get latest Raw message (excluding current message)
+      const latestMessage = await this.storage.getLatestRawMessage(
+        userId,
+        groupId,
+      )
 
       if (!latestMessage || latestMessage.id === currentRawId) {
         return {
           success: false,
-          message: '找不到上一則訊息 🤔',
-        };
+          message: CAPTURE_MESSAGES.SAVE_PREVIOUS_NOT_FOUND,
+        }
       }
 
       // 2. 使用 saveNow 的流程
-      return this.saveNow(userId, groupId, latestMessage.content, latestMessage.id);
+      return this.saveNow(
+        userId,
+        groupId,
+        latestMessage.content,
+        latestMessage.id,
+      )
     } catch (error) {
-      console.error('SavePrevious error:', error);
+      console.error('SavePrevious error:', error)
       return {
         success: false,
-        message: '處理失敗，請稍後再試 😢',
-      };
+        message: CAPTURE_MESSAGES.SAVE_PREVIOUS_ERROR,
+      }
     }
   }
 
   /**
-   * 處理「回覆訊息 + 幫我記」
+   * Handle "Reply to message + 幫我記"
    */
   async saveQuoted(
     userId: string,
     groupId: string | null,
-    quotedMessageId: string
+    quotedMessageId: string,
   ): Promise<ServiceResponse> {
     try {
-      // 1. 從 Raw DB 取得被引用的訊息
-      const quotedMessage = await this.storage.getRawMessageByLineId(quotedMessageId);
+      // 1. Get quoted message from Raw DB
+      const quotedMessage =
+        await this.storage.getRawMessageByLineId(quotedMessageId)
 
       if (!quotedMessage) {
         return {
           success: false,
-          message: '找不到被引用的訊息 🤔',
-        };
+          message: CAPTURE_MESSAGES.SAVE_QUOTED_NOT_FOUND,
+        }
       }
 
       // 2. 使用 saveNow 的流程
-      return this.saveNow(userId, groupId, quotedMessage.content, quotedMessage.id);
+      return this.saveNow(
+        userId,
+        groupId,
+        quotedMessage.content,
+        quotedMessage.id,
+      )
     } catch (error) {
-      console.error('SaveQuoted error:', error);
+      console.error('SaveQuoted error:', error)
       return {
         success: false,
-        message: '處理失敗，請稍後再試 😢',
-      };
+        message: CAPTURE_MESSAGES.SAVE_QUOTED_ERROR,
+      }
     }
   }
 
   /**
-   * 處理「確認」
+   * Handle "確認"
    */
   async confirmPending(
     userId: string,
-    groupId: string | null
+    groupId: string | null,
   ): Promise<ServiceResponse> {
     try {
-      // 1. 取得 pending
-      const pending = await this.storage.getPendingAction(userId, groupId);
+      // 1. Get pending
+      const pending = await this.storage.getPendingAction(userId, groupId)
 
       if (!pending) {
         return {
           success: false,
-          message: '沒有待確認的記憶 🤔',
-        };
+          message: CAPTURE_MESSAGES.CONFIRM_PENDING_NOT_FOUND,
+        }
       }
 
-      // 2. 取得原始訊息（用於 metadata）
-      const rawMessage = await this.storage.getRawMessage(pending.raw_id);
+      // 2. Get raw message (for metadata)
+      const rawMessage = await this.storage.getRawMessage(pending.raw_id)
 
       if (!rawMessage) {
         return {
           success: false,
-          message: '原始訊息已遺失 😢',
-        };
+          message: CAPTURE_MESSAGES.CONFIRM_PENDING_RAW_NOT_FOUND,
+        }
       }
 
-      // 3. 寫入 mem0
+      // 3. Write to mem0
       await this.memory.addMemory(userId, pending.draft_content, {
         raw_id: rawMessage.id,
         user_id: userId,
         group_id: groupId,
         created_at: new Date().toISOString(),
-      });
+      })
 
-      // 4. 刪除 pending
-      await this.storage.deletePendingAction(userId, groupId);
+      // 4. Delete pending
+      await this.storage.deletePendingAction(userId, groupId)
 
       return {
         success: true,
-        message: '✅ 記憶已儲存！',
-      };
+        message: CAPTURE_MESSAGES.CONFIRM_PENDING_SUCCESS,
+      }
     } catch (error) {
-      console.error('ConfirmPending error:', error);
+      console.error('ConfirmPending error:', error)
       return {
         success: false,
-        message: '儲存失敗，請稍後再試 😢',
-      };
+        message: CAPTURE_MESSAGES.CONFIRM_PENDING_ERROR,
+      }
     }
   }
 
   /**
-   * 處理「取消」
+   * Handle "取消"
    */
   async cancelPending(
     userId: string,
-    groupId: string | null
+    groupId: string | null,
   ): Promise<ServiceResponse> {
     try {
-      const pending = await this.storage.getPendingAction(userId, groupId);
+      const pending = await this.storage.getPendingAction(userId, groupId)
 
       if (!pending) {
         return {
           success: false,
-          message: '沒有待確認的記憶 🤔',
-        };
+          message: CAPTURE_MESSAGES.CANCEL_PENDING_NOT_FOUND,
+        }
       }
 
-      await this.storage.deletePendingAction(userId, groupId);
+      await this.storage.deletePendingAction(userId, groupId)
 
       return {
         success: true,
-        message: '❌ 已取消',
-      };
+        message: CAPTURE_MESSAGES.CANCEL_PENDING_SUCCESS,
+      }
     } catch (error) {
-      console.error('CancelPending error:', error);
+      console.error('CancelPending error:', error)
       return {
         success: false,
-        message: '取消失敗 😢',
-      };
+        message: CAPTURE_MESSAGES.CANCEL_PENDING_ERROR,
+      }
     }
   }
 }

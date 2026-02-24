@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "keywords": ["line-bot", "memory", "assistant", "ai"],
+  "keywords": [
+    "line-bot",
+    "memory",
+    "assistant",
+    "ai"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {

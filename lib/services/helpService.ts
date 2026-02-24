@@ -1,35 +1,33 @@
-import { ServiceResponse } from '@/lib/types';
+import { ServiceResponse, CommandType } from '@/lib/types'
+import { COMMAND_ALIASES } from '@/lib/constants/commands'
 
 export class HelpService {
   /**
-   * 處理 help 指令
+   * Generate help message with all command aliases
    */
   static getHelpMessage(): ServiceResponse {
     const helpText = `
-🤖 LINE Memory Assistant 使用說明
+🤖 LINE 記憶助手 - 指令說明
 
-📝 儲存記憶：
-• 幫我記 <內容> - 儲存當下內容
-• 存上一則 - 儲存最近一則訊息
-• 回覆訊息 + 幫我記 - 儲存被回覆的訊息
+📝 保存記憶：
+• ${COMMAND_ALIASES[CommandType.SAVE_NOW].join(' / ')} <內容>  - 立即保存
+• ${COMMAND_ALIASES[CommandType.SAVE_PREVIOUS].join(' / ')}  - 保存最近的訊息
+• <回覆特定訊息> + 幫我記  - 保存被引用的訊息
 
-✅ 確認操作：
-• 確認 - 確認儲存待確認的記憶
-• 取消 - 取消待確認的記憶
+✅ 確認或取消：
+• ${COMMAND_ALIASES[CommandType.PENDING_CONFIRM].join(' / ')}  - 確認保存待審核的記憶
+• ${COMMAND_ALIASES[CommandType.PENDING_CANCEL].join(' / ')}  - 取消保存待審核的記憶
 
 🔍 查詢記憶：
-• 查 <問題> - 搜尋相關記憶
+• ${COMMAND_ALIASES[CommandType.QUERY].join(' / ')} <問題>  - 搜尋已保存的記憶
 
 ℹ️ 其他：
-• help / 怎麼用 - 顯示此說明
-
-💡 提示：
-所有訊息都會自動儲存為原始記錄，隨時可以升級為長期記憶！
-    `.trim();
+• ${COMMAND_ALIASES[CommandType.HELP].join(' / ')}  - 顯示此說明
+    `.trim()
 
     return {
       success: true,
       message: helpText,
-    };
+    }
   }
 }
