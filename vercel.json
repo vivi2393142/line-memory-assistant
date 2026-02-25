@@ -1,8 +1,10 @@
 {
   "buildCommand": "npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps --no-audit --prefer-offline",
   "outputDirectory": ".next",
-  "env": {
-    "NPM_FLAGS": "--legacy-peer-deps"
+  "functions": {
+    "app/api/**": {
+      "maxDuration": 30
+    }
   }
 }
