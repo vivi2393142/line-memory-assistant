@@ -1,8 +1,4 @@
-{
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "outputDirectory": ".next",
-  "functions": {
+{  "installCommand": "npm install --ignore-scripts",  "functions": {
     "app/api/**": {
       "maxDuration": 30
     }
