@@ -1,6 +1,9 @@
-{  "installCommand": "npm install --ignore-scripts",  "functions": {
+{
+  "installCommand": "yarn install --ignore-scripts",
+  "functions": {
     "app/api/**": {
-      "maxDuration": 30
+      "maxDuration": 60
     }
   }
 }
+
