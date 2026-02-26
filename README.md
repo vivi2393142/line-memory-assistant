@@ -1,6 +1,8 @@
-# LINE Memory Assistant
-
-> A personal memory assistant bot for LINE groups with automatic storage, semantic search, and long-term memory management.
+<div align="center">
+  <img src="./logo.png" alt="LINE Memory Assistant" width="200" />
+  <h1>LINE Memory Assistant</h1>
+  <p>A personal memory assistant bot for LINE groups with automatic storage, semantic search, and long-term memory management.</p>
+</div>
 
 ## Features
 
@@ -10,15 +12,15 @@
 
 ## Commands
 
-| Command                     | Aliases                          | Function                        |
-| --------------------------- | -------------------------------- | ------------------------------- |
-| `幫我記 <content>`          | `記一下`, `記錄`, `save`, `儲存` | Save current content as memory  |
-| `存上一則`                  | `存最後一則`                     | Save the most recent message    |
-| Reply to message + `幫我記` | -                                | Save the replied message        |
-| `確認儲存記憶`              | -                                | Confirm and save pending memory |
-| `取消儲存記憶`              | -                                | Cancel pending memory           |
-| `查 <question>`             | `找`, `搜尋`, `search`           | Search memories                 |
-| `help`                      | `怎麼用`, `幫助`                 | Show help message               |
+| Feature          | Syntax / Condition                  | Keyword                                    |
+| ---------------- | ----------------------------------- | ------------------------------------------ |
+| 記錄現在這句話   | [keyword] + 內容                    | `幫我記`, `記一下`, `記錄`, `save`, `儲存` |
+| 記錄上一則訊息   | [keyword]                           | `存上一則`, `存最後一則`                   |
+| 記錄某個說過的話 | 回覆某則訊息 + [keyword]            | `幫我記`, `記一下`, `記錄`, `save`, `儲存` |
+| 確認寫入記憶     | [keyword] (或點彈出的 quick button) | `確認儲存記憶`                             |
+| 取消寫入記憶     | [keyword] (或點彈出的 quick button) | `取消儲存記憶`                             |
+| 查詢記憶         | [keyword] + 問題                    | `查`, `找`, `搜尋`, `search`               |
+| 取得使用說明     | [keyword]                           | `help`, `怎麼用`, `幫助`                   |
 
 ## System Architecture
 
