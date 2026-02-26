@@ -1,37 +1,68 @@
 <div align="center">
-  <img src="./logo.png" alt="LINE Memory Assistant" width="200" />
+  <img src="./docs/logo.png" alt="LINE Memory Assistant" width="200" />
   <h1>LINE Memory Assistant</h1>
   <p>A personal memory assistant bot for LINE groups with automatic storage, semantic search, and long-term memory management.</p>
 </div>
 
-## Inspiration & Design Approach
-
-This project is inspired by [Boo-Boo: LINE AI Assistant](https://techblog.lycorp.co.jp/zh-hant/Boo-Boo-LINE-AI-Assistant), with key adaptations to fit specific needs:
-
-### Why Group Bot Instead of Official Account?
-
-- **Seamless Integration**: Add to existing personal/group chats without disrupting workflow
-- **Keep Existing Data**: No need to abandon past notes, albums, or shared content
-- **Full LINE Features**: Official accounts have limitations; groups support notebooks, albums, and more
-- **Natural Experience**: Continue using LINE as usual, not as a chatbot interface
-
-### Focused on Memory, Not Reminders
-
-- **Core Function**: Memory capture and search only—no calendar, todos, or task management
-- **Use What Works**: Leverage LINE for what it does best; use dedicated apps for other needs
-- **Simplicity First**: Fewer commands, clearer purpose
-
-### Minimal Interruption Philosophy
-
-- **No Auto-Reply**: Bot only responds to specific keywords
-- **AI Only When Needed**: LLM used for content cleaning and search—not for conversations
-- **Low Noise**: Perfect for personal note-taking without disrupting group discussions
-
 ## Features
 
-- **Auto-save**: All messages automatically stored as raw records
-- **Structured Memory Search**: Upgrade to searchable, organized memories using semantic search
-- **Low-interference**: No auto-reply, only responds to specific keywords
+- **Semantic Search**: Upgrade to searchable, structured memories with intelligent retrieval
+- **Non-Disruptive**: No auto-reply, only responds to keywords. Add to existing groups without losing history
+- **Full Traceability**: All messages auto-saved as raw records for source verification and context retrieval
+
+## Quick Demo
+
+### Example 1: Cross-Message Reasoning with Structured Memory
+
+<div>
+  <img src="./docs/demo-1-1.png" alt="Demo: Temporal reasoning (step 1)" width="33%" style="display:inline-block; margin-right:10px; vertical-align:top;" />
+  <img src="./docs/demo-1-2.png" alt="Demo: Temporal reasoning (step 2)" width="33%" style="display:inline-block; vertical-align:top;" />
+</div>
+
+Timeline:
+
+1. User inputs: _"儲存 準備去東京玩 機票訂好了住宿還沒 三月底出發共五天 之後隔兩週會再去首爾玩"_
+2. Bot structures content and shows quick reply buttons for confirmation (left screenshot):  
+   _"東京旅遊：三月底出發，共五天。機票已訂，住宿待訂。東京行程後兩週將前往首爾。"_
+3. User clicks button → Memory saved
+4. Later, user asks: _"我 什麼時候要去首爾 有準確日期嗎"_
+5. Bot infers dates (right screenshot): _"您將在東京之旅結束後兩週前往首爾...如果東京之旅於 2026 年 3 月 31 日結束，則首爾之旅約在 2026 年 4 月 14 日。"_
+
+Key capabilities:
+
+- **Temporal reasoning**: Input only said "two weeks later" - bot calculates exact dates across memories
+- **Source traceability**: Shows original messages with timestamps for verification
+
+### Example 2: Dynamic Memory Updates with Structured Integration
+
+<div style="display:flex; gap:10px; align-items:flex-start; flex-wrap:nowrap;">
+  <img src="./docs/demo-2-1.png" alt="Demo: Quick reply confirmation" style="width:32%; height:auto;" />
+  <img src="./docs/demo-2-2.png" alt="Demo: Memory updates" style="width:32%; height:auto;" />
+  <img src="./docs/demo-2-3.png" alt="Demo: Query result" style="width:32%; height:auto;" />
+</div>
+
+Timeline:
+
+1. User says: _"幫我記 衛生紙用完了要買"_ → Saved as pending item
+2. Bot shows quick reply buttons for easy confirmation (left screenshot)
+3. User says: _"醬油和鹽也都用完了要買 衛生紙已經買到了"_ → Memory updated (middle screenshot)
+4. User replies to a message with: _"記錄"_ → Captures that specific message
+5. User asks: _"查 我在超市 有什麼家裡沒有了要買"_
+6. Bot answers: _"您需要購買醬油和鹽"_ (right screenshot, knows toilet paper is done)
+
+Key capabilities:
+
+- **Quick reply buttons**: Easy confirmation without typing commands
+- **Memory updates**: New information overwrites outdated items (toilet paper: needed → bought)
+- **Structured integration**: Organizes scattered mentions into categorized lists
+- **Post-save capture**: Reply to any message to save it later
+
+### Why This Matters
+
+- Understands context, not just keywords
+- Merges scattered messages into one clear answer
+- Infers dates and timelines from your notes
+- Always links back to the original messages
 
 ## Commands
 
@@ -45,9 +76,17 @@ This project is inspired by [Boo-Boo: LINE AI Assistant](https://techblog.lycorp
 | 查詢記憶         | [keyword] + 問題                    | `查`, `找`, `搜尋`, `search`               |
 | 取得使用說明     | [keyword]                           | `help`, `怎麼用`, `幫助`                   |
 
+## Inspiration & Design Approach
+
+Inspired by [Boo-Boo: LINE AI Assistant](https://techblog.lycorp.co.jp/zh-hant/Boo-Boo-LINE-AI-Assistant), adapted with three key principles:
+
+1. **Group Bot, Not Official Account**: Add to existing chats without disruption; keep past notes, albums, and full LINE features
+2. **Memory Only, No Todos**: Focus solely on capture and search—no calendars or task management
+3. **Minimal Interruption**: No auto-reply; AI only for content cleaning and search, not conversations
+
 ## System Architecture
 
-### Layered Design
+**Layered Design**
 
 ```
 LINE Webhook
@@ -66,7 +105,7 @@ Provider Layer (swappable)
   └─ StorageProvider (Supabase)
 ```
 
-### Memory Upgrade Flow
+**Memory Upgrade Flow**
 
 ```
 User Message → Save to Raw DB → Parse Command
@@ -76,7 +115,7 @@ User Message → Save to Raw DB → Parse Command
               User Confirms → Write to mem0 → Complete
 ```
 
-### Query Flow
+**Query Flow**
 
 ```
 Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Sources → Reply
@@ -84,29 +123,25 @@ Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Source
 
 ## Tech Stack
 
-| Layer            | Technology        | Description                    |
-| ---------------- | ----------------- | ------------------------------ |
-| Language         | TypeScript        | Type-safe                      |
-| Framework        | Next.js 14        | Serverless API Routes          |
-| Hosting          | Vercel Hobby      | Free deployment (100 GB/month) |
-| Database         | Supabase Postgres | Free tier (500 MB)             |
-| Long-term Memory | mem0              | Hosted memory service          |
-| LLM              | Google Gemini     | Free API quota (60 req/min)    |
-| LINE             | @line/bot-sdk     | Official SDK                   |
+| Layer            | Technology        | Description                          |
+| ---------------- | ----------------- | ------------------------------------ |
+| Language         | TypeScript        | Type-safe                            |
+| Framework        | Next.js 14        | Serverless API Routes                |
+| Hosting          | Vercel Hobby      | Free deployment (100 GB/month)       |
+| Database         | Supabase Postgres | Free tier (500 MB)                   |
+| Long-term Memory | mem0              | Hosted and handled structured memory |
+| LLM              | Google Gemini     | Free API quota (60 req/min)          |
+| LINE             | @line/bot-sdk     | Official SDK                         |
 
-### Free Tier Quotas
+**Free Tier Quotas**
 
-| Service      | Free Tier Limits                            | How to Check Usage                                                              |
-| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Gemini**   | 15 RPM, 1M TPM, 1500 RPD                    | [Google AI Studio - Rate Limits](https://aistudio.google.com/app/plan)          |
-| **Supabase** | 500 MB storage, 5 GB bandwidth/month        | [Supabase Dashboard](https://supabase.com/dashboard/project/_/settings/billing) |
-| **mem0**     | Hobby Plan (check official docs for limits) | [mem0 Dashboard](https://app.mem0.ai/dashboard)                                 |
-| **Vercel**   | 100 GB bandwidth/month (Hobby)              | [Vercel Usage](https://vercel.com/dashboard/usage)                              |
-| **LINE**     | No quota limits when using `replyToken`     | -                                                                               |
-
-> **RPM**: Requests per minute  
-> **TPM**: Tokens per minute  
-> **RPD**: Requests per day
+| Service  | Free Tier Limits                            | How to Check Usage                                                              |
+| -------- | ------------------------------------------- | ------------------------------------------------------------------------------- |
+| Gemini   | 15 RPM, 1M TPM, 1500 RPD                    | [Google AI Studio - Rate Limits](https://aistudio.google.com/app/plan)          |
+| Supabase | 500 MB storage, 5 GB bandwidth/month        | [Supabase Dashboard](https://supabase.com/dashboard/project/_/settings/billing) |
+| mem0     | Hobby Plan (check official docs for limits) | [mem0 Dashboard](https://app.mem0.ai/dashboard)                                 |
+| Vercel   | 100 GB bandwidth/month (Hobby)              | [Vercel Usage](https://vercel.com/dashboard/usage)                              |
+| LINE     | No quota limits when using `replyToken`     | -                                                                               |
 
 ## Quick Start
 
@@ -146,37 +181,9 @@ line-memory-assistant/
     └── QA_TEST_PLAN.md
 ```
 
-## Design Philosophy
-
-### Default No-Reply
-
-Unlike typical chatbots, this bot is designed for "low interference":
-
-- All messages auto-saved as raw records
-- Only specific keywords trigger replies
-- Perfect for personal note-taking without interrupting conversations
-
-### Two-Stage Memory
-
-**Raw Records** (automatic) → **Long-term Memory** (manual confirmation)
-
-This design allows you to:
-
-- Record everything without worry
-- Only upgrade important content to searchable memory
-- Preview and edit before upgrading
-
-### Traceability
-
-Every memory retains a reference to the original message:
-
-- Query results include sources
-- Can trace back to the complete original message
-- Prevents information loss from AI summarization
-
 ## Database Design
 
-### messages (raw messages)
+**messages (raw messages)**
 
 ```sql
 - id: UUID
@@ -188,7 +195,7 @@ Every memory retains a reference to the original message:
 - created_at: TIMESTAMP
 ```
 
-### pending_actions (pending memories)
+**pending_actions (pending memories)**
 
 ```sql
 - id: UUID
@@ -203,7 +210,7 @@ Every memory retains a reference to the original message:
 UNIQUE(user_id, group_id)  -- Each user can only have one pending
 ```
 
-### mem0 (long-term memory)
+**mem0 (long-term memory)**
 
 Using mem0 hosted service, metadata includes:
 
@@ -211,39 +218,6 @@ Using mem0 hosted service, metadata includes:
 - `user_id`: User ID
 - `group_id`: Group ID
 - `created_at`: Creation timestamp
-
-## Future Features (Phase 2+)
-
-- [ ] List all memories (Flex Message UI)
-- [ ] Delete memories
-- [ ] Tag system
-- [ ] Batch upgrade Raw → Memory
-- [ ] Web Dashboard for querying
-- [ ] Memory conflict detection
-- [ ] Search result reranking
-
-## Debugging Tips
-
-### Check Webhook Status
-
-```bash
-curl https://your-project.vercel.app/api/webhook
-# Should return: {"status":"ok","service":"LINE Memory Assistant","version":"1.0.0"}
-```
-
-### View Vercel Logs
-
-```bash
-vercel logs
-```
-
-### Test Database Connection
-
-In Supabase Dashboard > SQL Editor:
-
-```sql
-SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
-```
 
 ## References
 
@@ -253,6 +227,12 @@ SELECT * FROM messages ORDER BY created_at DESC LIMIT 10;
 - [Supabase Documentation](https://supabase.com/docs)
 - [Google AI (Gemini) Documentation](https://ai.google.dev/docs)
 
-## License
+## Future Features
 
-MIT
+- [ ] List all memories (Flex Message UI)
+- [ ] Delete memories
+- [ ] Tag system
+- [ ] Batch upgrade Raw → Memory
+- [ ] Web Dashboard for querying
+- [ ] Memory conflict detection
+- [ ] Search result reranking
