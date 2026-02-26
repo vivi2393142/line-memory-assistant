@@ -4,6 +4,29 @@
   <p>A personal memory assistant bot for LINE groups with automatic storage, semantic search, and long-term memory management.</p>
 </div>
 
+## Inspiration & Design Approach
+
+This project is inspired by [Boo-Boo: LINE AI Assistant](https://techblog.lycorp.co.jp/zh-hant/Boo-Boo-LINE-AI-Assistant), with key adaptations to fit specific needs:
+
+### Why Group Bot Instead of Official Account?
+
+- **Seamless Integration**: Add to existing personal/group chats without disrupting workflow
+- **Keep Existing Data**: No need to abandon past notes, albums, or shared content
+- **Full LINE Features**: Official accounts have limitations; groups support notebooks, albums, and more
+- **Natural Experience**: Continue using LINE as usual, not as a chatbot interface
+
+### Focused on Memory, Not Reminders
+
+- **Core Function**: Memory capture and search only—no calendar, todos, or task management
+- **Use What Works**: Leverage LINE for what it does best; use dedicated apps for other needs
+- **Simplicity First**: Fewer commands, clearer purpose
+
+### Minimal Interruption Philosophy
+
+- **No Auto-Reply**: Bot only responds to specific keywords
+- **AI Only When Needed**: LLM used for content cleaning and search—not for conversations
+- **Low Noise**: Perfect for personal note-taking without disrupting group discussions
+
 ## Features
 
 - **Auto-save**: All messages automatically stored as raw records
