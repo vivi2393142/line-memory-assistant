@@ -1,9 +1,11 @@
 import { StorageProvider } from '@/lib/providers/storageProvider';
 import { LLMProvider } from '@/lib/providers/llmProvider';
 import { MemoryProvider } from '@/lib/providers/memoryProvider';
-import { ServiceResponse } from '@/lib/types';
+import type { Memory, ServiceResponse } from '@/lib/types';
 import { QUERY_MESSAGES } from '@/lib/constants/queryMessages';
 import { handleServiceError } from '@/lib/utils/errorHandler';
+
+const LIMIT = 3;
 
 export class QueryService {
   private storage: StorageProvider;
@@ -20,13 +22,14 @@ export class QueryService {
     this.memory = memory;
   }
 
-  /**
-   * Handle "查 <question>"
-   */
   async query(userId: string, query: string): Promise<ServiceResponse> {
     try {
       // 1. mem0 search
-      const searchResults = await this.memory.searchMemory(userId, query, 5);
+      const searchResults = await this.memory.searchMemory(
+        userId,
+        query,
+        LIMIT,
+      );
 
       if (searchResults.length === 0) {
         return {
@@ -36,7 +39,10 @@ export class QueryService {
       }
 
       // 2. LLM generates answer
-      const memories = searchResults.map((r) => r.memory);
+      const memories = searchResults.reduce((acc: Memory[], curr, idx) => {
+        if (curr.memory && idx < LIMIT) acc.push(curr.memory);
+        return acc;
+      }, []);
       const answer = await this.llm.generateAnswer(query, memories);
 
       // 3. Get original message sources
@@ -59,7 +65,6 @@ export class QueryService {
 
       // 4. Compose response
       let response = `${answer}\n\n`;
-
       if (validSources.length > 0) {
         response += `${QUERY_MESSAGES.SOURCE_LABEL}\n`;
         validSources.forEach((source) => {

@@ -1,15 +1,15 @@
-import { MemoryClient, type Message } from 'mem0ai'
-import { MemoryMetadata, SearchResult } from '@/lib/types'
-import { validateMem0Response } from '@/lib/utils/errorValidator'
+import { MemoryClient, type Message } from 'mem0ai';
+import { MemoryMetadata, SearchResult } from '@/lib/types';
+import { validateMem0Response } from '@/lib/utils/errorValidator';
 
 export class MemoryProvider {
-  private client: MemoryClient
+  private client: MemoryClient;
 
   constructor() {
-    const apiKey = process.env.MEM0_API_KEY!
-    if (!apiKey) throw new Error('Missing mem0 API key')
+    const apiKey = process.env.MEM0_API_KEY!;
+    if (!apiKey) throw new Error('Missing mem0 API key');
 
-    this.client = new MemoryClient({ apiKey })
+    this.client = new MemoryClient({ apiKey });
   }
 
   /**
@@ -27,24 +27,24 @@ export class MemoryProvider {
         role: 'user',
         content: content,
       },
-    ]
+    ];
 
     const result = await this.client.add(messages, {
       user_id: userId,
       metadata: metadata,
       version: 'v2',
-    })
+    });
 
     // Validate response
-    const validation = validateMem0Response(result)
+    const validation = validateMem0Response(result);
     if (validation.isError) {
-      throw new Error(`Failed to add memory: ${validation.message}`)
+      throw new Error(`Failed to add memory: ${validation.message}`);
     }
 
     // mem0 add returns array with format: [{ id: string, data: { memory: string }, event: string }]
-    if (result.length > 0) return result[0].id
+    if (result.length > 0) return result[0].id;
 
-    throw new Error('Failed to add memory: invalid response format')
+    throw new Error('Failed to add memory: invalid response format');
   }
 
   /**
@@ -55,17 +55,17 @@ export class MemoryProvider {
   async searchMemory(
     userId: string,
     query: string,
-    limit: number = 5,
+    limit: number = 3,
   ): Promise<SearchResult[]> {
     const results = await this.client.search(query, {
       user_id: userId,
       limit: limit,
-    })
+    });
 
     // Validate response
-    const validation = validateMem0Response(results)
+    const validation = validateMem0Response(results);
     if (validation.isError) {
-      throw new Error(`Failed to search memory: ${validation.message}`)
+      throw new Error(`Failed to search memory: ${validation.message}`);
     }
 
     // mem0 search returns array directly: [{ id, memory, metadata, score }]
@@ -76,7 +76,7 @@ export class MemoryProvider {
         metadata: item.metadata || {},
       },
       score: item.score || 0,
-    }))
+    }));
   }
 
   /**
