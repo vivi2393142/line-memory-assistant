@@ -71,10 +71,6 @@ Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Source
 | LLM              | Google Gemini     | Free API quota (60 req/min)    |
 | LINE             | @line/bot-sdk     | Official SDK                   |
 
-**Cost: Completely Free**
-
-## Service Limits & Error Handling
-
 ### Free Tier Quotas
 
 | Service      | Free Tier Limits                            | How to Check Usage                                                              |
@@ -93,36 +89,20 @@ Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Source
 
 See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for complete setup instructions.
 
-### Quick Steps
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Setup environment variables
-cp .env.example .env.local
-# Edit .env.local with your API keys
-
-# 3. Run SQL schema in Supabase
-# Execute supabase/schema.sql in Supabase SQL Editor
-
-# 4. Deploy to Vercel
-vercel --prod
-
-# 5. Configure LINE Webhook URL
-# https://your-project.vercel.app/api/webhook
-```
-
 ## Project Structure
-
-<!-- TODO: need to be updated -->
 
 ```
 line-memory-assistant/
 ├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
 │   └── api/webhook/route.ts      # LINE webhook endpoint
 ├── lib/
 │   ├── types/index.ts             # TypeScript type definitions
+│   ├── constants/                 # Command & message constants
+│   │   ├── captureMessages.ts
+│   │   ├── commands.ts
+│   │   └── queryMessages.ts
 │   ├── parsers/
 │   │   └── commandParser.ts       # Command parser
 │   ├── providers/                 # Swappable third-party wrappers
@@ -130,11 +110,17 @@ line-memory-assistant/
 │   │   ├── llmProvider.ts
 │   │   ├── memoryProvider.ts
 │   │   └── storageProvider.ts
-│   └── services/                  # Business logic
-│       ├── captureService.ts
-│       ├── queryService.ts
-│       └── helpService.ts
-└── supabase/schema.sql            # Database schema
+│   ├── services/                  # Business logic
+│   │   ├── captureService.ts
+│   │   ├── queryService.ts
+│   │   └── helpService.ts
+│   └── utils/                     # Utilities & helpers
+│       ├── errorHandler.ts
+│       ├── commandUtils.ts
+│       └── errorValidator.ts
+├── supabase/schema.sql            # Database schema
+└── qa/                            # QA tests
+    └── QA_TEST_PLAN.md
 ```
 
 ## Design Philosophy
