@@ -71,6 +71,22 @@ Query Command → mem0 Semantic Search → LLM Composes Answer → Attach Source
 
 **Cost: Completely Free**
 
+## Service Limits & Error Handling
+
+### Free Tier Quotas
+
+| Service      | Free Tier Limits                            | How to Check Usage                                                              |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Gemini**   | 15 RPM, 1M TPM, 1500 RPD                    | [Google AI Studio - Rate Limits](https://aistudio.google.com/app/plan)          |
+| **Supabase** | 500 MB storage, 5 GB bandwidth/month        | [Supabase Dashboard](https://supabase.com/dashboard/project/_/settings/billing) |
+| **mem0**     | Hobby Plan (check official docs for limits) | [mem0 Dashboard](https://app.mem0.ai/dashboard)                                 |
+| **Vercel**   | 100 GB bandwidth/month (Hobby)              | [Vercel Usage](https://vercel.com/dashboard/usage)                              |
+| **LINE**     | No quota limits when using `replyToken`     | -                                                                               |
+
+> **RPM**: Requests per minute  
+> **TPM**: Tokens per minute  
+> **RPD**: Requests per day
+
 ## Quick Start
 
 See **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for complete setup instructions.

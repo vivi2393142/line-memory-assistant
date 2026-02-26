@@ -13,6 +13,9 @@ export class LLMProvider {
     }
 
     this.genAI = new GoogleGenerativeAI(apiKey);
+    // Model: gemini-2.5-flash (stable, long-term support)
+    // Free tier limits: 15 RPM, 1M TPM, 1500 RPD
+    // Rate limit errors (429) will be caught and shown as "儲存失敗，請重試"
     this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   }
 

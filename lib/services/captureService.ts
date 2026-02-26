@@ -5,6 +5,7 @@ import { ServiceResponse } from '@/lib/types';
 import { CommandType } from '@/lib/types';
 import { COMMAND_ALIASES } from '@/lib/constants/commands';
 import { CAPTURE_MESSAGES } from '@/lib/constants/captureMessages';
+import { handleServiceError } from '@/lib/utils/errorHandler';
 import type { Message } from '@line/bot-sdk';
 
 export class CaptureService {
@@ -85,12 +86,12 @@ export class CaptureService {
         success: true,
         message: messageWithQuickReply,
       };
-    } catch (error) {
-      console.error('SaveNow error:', error);
-      return {
-        success: false,
-        message: CAPTURE_MESSAGES.SAVE_NOW_ERROR,
-      };
+    } catch (error: any) {
+      return handleServiceError(
+        error,
+        'SaveNow',
+        CAPTURE_MESSAGES.SAVE_NOW_ERROR,
+      );
     }
   }
 
