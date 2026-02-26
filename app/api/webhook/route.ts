@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     console.log('[Webhook] Incoming request', {
       hasSignature: !!signature,
-      bodyPreview: body.slice(0, 500),
     });
 
     if (!signature) {
@@ -39,6 +38,17 @@ export async function POST(req: NextRequest) {
     console.log('[Webhook] Parsed events', {
       eventCount: events.length,
       eventTypes: events.map((e) => e.type),
+      eventSummaries: events
+        .filter((e): e is MessageEvent => e.type === 'message')
+        .map((e) => ({
+          type: e.type,
+          sourceUserId: e.source?.userId,
+          sourceType: e.source?.type,
+          timestamp: e.timestamp,
+          messageId: (e.message as TextEventMessage)?.id,
+          messageType: (e.message as TextEventMessage)?.type,
+          messageText: (e.message as TextEventMessage)?.text,
+        })),
     });
 
     // 3. Initialize providers and services

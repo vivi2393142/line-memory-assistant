@@ -18,11 +18,11 @@ export const CAPTURE_MESSAGES = {
   // Confirm pending (confirmPending method)
   CONFIRM_PENDING_NOT_FOUND: '沒有待處理的記憶 (´_ゝ`)',
   CONFIRM_PENDING_RAW_NOT_FOUND: '原始訊息遺失 (´;ω;`)',
-  CONFIRM_PENDING_SUCCESS: 'O 已儲存記憶!',
+  CONFIRM_PENDING_SUCCESS: '✅ 已儲存記憶!',
   CONFIRM_PENDING_ERROR: '處理失敗，請重試 (╥﹏╥)',
 
   // Cancel pending (cancelPending method)
   CANCEL_PENDING_NOT_FOUND: '沒有待處理的記憶 (´_ゝ`)',
-  CANCEL_PENDING_SUCCESS: 'X 已取消',
+  CANCEL_PENDING_SUCCESS: '❌ 已取消',
   CANCEL_PENDING_ERROR: '取消失敗，請重試 (╥﹏╥)',
 } as const;
