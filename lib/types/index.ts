@@ -1,26 +1,26 @@
-import type { Message } from '@line/bot-sdk'
+import type { Message } from '@line/bot-sdk';
 
 // ============ Database Types ============
 
 export interface RawMessage {
-  id: string
-  user_id: string
-  group_id: string | null
-  line_message_id: string
-  quoted_message_id: string | null
-  content: string
-  created_at: string
+  id: string;
+  user_id: string;
+  group_id: string | null;
+  line_message_id: string;
+  quoted_message_id: string | null;
+  content: string;
+  created_at: string;
 }
 
 export interface PendingAction {
-  id: string
-  user_id: string
-  group_id: string | null
-  action_type: 'add_memory'
-  draft_content: string
-  raw_id: string
-  expires_at: string
-  created_at: string
+  id: string;
+  user_id: string;
+  group_id: string | null;
+  action_type: 'add_memory';
+  draft_content: string;
+  raw_id: string;
+  expires_at: string;
+  created_at: string;
 }
 
 // ============ Command Types ============
@@ -37,52 +37,53 @@ export enum CommandType {
 }
 
 export interface ParsedCommand {
-  type: CommandType
-  content?: string // For SAVE_NOW and QUERY
+  type: CommandType;
+  content?: string; // For SAVE_NOW and QUERY
 }
 
 // ============ Memory Types ============
 
 export interface MemoryMetadata {
-  raw_id: string
-  user_id: string
-  group_id: string | null
-  created_at: string
+  raw_id: string;
+  user_id: string;
+  group_id: string | null;
+  created_at: string;
 }
 
 export interface Memory {
-  id: string
-  content: string
-  metadata: MemoryMetadata
+  id: string;
+  content: string;
+  metadata: MemoryMetadata;
 }
 
 export interface SearchResult {
-  memory: Memory
-  score: number
+  memory: Memory;
+  score: number;
 }
 
 // ============ LINE Types ============
 
 export interface LINEMessageEvent {
-  type: 'message'
-  replyToken: string
+  type: 'message';
+  replyToken: string;
   source: {
-    userId: string
-    groupId?: string
-    type: 'user' | 'group' | 'room'
-  }
-  timestamp: number
+    userId: string;
+    groupId?: string;
+    type: 'user' | 'group' | 'room';
+  };
+  timestamp: number;
   message: {
-    id: string
-    type: 'text'
-    text: string
-    quoteToken?: string
-  }
+    id: string;
+    type: 'text';
+    text: string;
+    quoteToken?: string;
+    quotedMessageId?: string; // Present when replying to a message
+  };
 }
 
 // ============ Service Response Types ============
 
 export interface ServiceResponse {
-  success: boolean
-  message?: string | Message | Message[] // Can be text or LINE Message object
+  success: boolean;
+  message?: string | Message | Message[]; // Can be text or LINE Message object
 }

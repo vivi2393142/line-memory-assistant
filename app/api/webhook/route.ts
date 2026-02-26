@@ -79,7 +79,8 @@ export async function POST(req: NextRequest) {
       });
 
       // 6. Parse command
-      const hasQuotedMessage = !!message.quoteToken;
+      // Use quotedMessageId (not quoteToken) to detect actual quoted messages
+      const hasQuotedMessage = !!message.quotedMessageId;
       const command = CommandParser.parse(text, hasQuotedMessage);
 
       // 7. Execute corresponding service
@@ -111,11 +112,11 @@ export async function POST(req: NextRequest) {
           break;
 
         case CommandType.SAVE_QUOTED:
-          if (message.quoteToken) {
+          if (message.quotedMessageId) {
             response = await captureService.saveQuoted(
               userId,
               groupId,
-              message.quoteToken,
+              message.quotedMessageId,
             );
           }
           break;
