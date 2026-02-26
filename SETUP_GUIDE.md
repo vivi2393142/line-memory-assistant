@@ -31,31 +31,34 @@ Complete guide for setting up all required external services.
    - **Subcategory**: Select appropriate subcategory
 3. Agree to terms and create
 
-### Step 3: Get Credentials
+### Step 3: Adjust LINE Settings
 
-1. Enter your newly created Channel
-2. Go to **Messaging API** tab in LINE Developers
-3. Find and note down:
+1. Open the LINE Official Account Manager **「設定」** page.
+2. Go to **「主頁 > 自動回應訊息」** and delete the default auto-reply message (to avoid unwanted replies).
+3. Go to **「設定 > 帳號設定 > 功能切換」** and enable **「接受邀請加入群組或多人聊天室」**.
+4. Go to **「設定 > 回應設定 > 回應功能」** and disable **「自動回應訊息」** if it is enabled.
+
+### Step 4: Get Credentials
+
+1. Go to LINE Developers page, you can find it through **「設定 > Messaging API > LINE Developers Console」**.
+2. Go to **Basic settings** tab in LINE Developers
+   - **Channel secret** (long-term):
+     - Copy the generated token and add to environment variables
+3. Go to **Messaging API** tab in LINE Developers
    - **Channel access token** (long-term):
      - Click "Issue" button
-     - Copy the generated token (e.g., `abc123xyz...`)
+     - Copy the generated token and add to environment variables
 
-### Step 4: Basic Configuration
+### Step 5: Messaging API Settings
 
 In **Messaging API** tab:
 
 1. **Webhook settings**:
-   - Don't configure yet (set after deployment)
-   - Ensure "Use webhook" is disabled
+   - Set Webhook URL after deployment
+   - Enable "Use webhook"
 
-2. **Auto-reply messages**:
-   - Disable auto-reply messages (to avoid interference)
-
-3. **Greeting messages**:
+2. **Greeting messages**:
    - Customize or disable as needed
-
-4. **Allow bot to join group chats**:
-   - Enable (Important!)
 
 ---
 
