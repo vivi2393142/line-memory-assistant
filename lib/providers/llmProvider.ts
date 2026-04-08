@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Memory } from '@/lib/types';
 
 export class LLMProvider {
   private genAI: GoogleGenerativeAI;
@@ -52,13 +51,16 @@ ${rawText}
   /**
    * Generate answer based on query and memories
    */
-  async generateAnswer(query: string, memories: Memory[]): Promise<string> {
-    if (memories.length === 0) {
+  async generateAnswer(
+    query: string,
+    memoryContents: string[],
+  ): Promise<string> {
+    if (memoryContents.length === 0) {
       return '找不到相關的記憶 🤔';
     }
 
-    const memoryContext = memories
-      .map((m, i) => `[${i + 1}] ${m.content}`)
+    const memoryContext = memoryContents
+      .map((content, i) => `[${i + 1}] ${content}`)
       .join('\n\n');
 
     const prompt = `

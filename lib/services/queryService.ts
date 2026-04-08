@@ -5,7 +5,17 @@ import type { Memory, ServiceResponse } from '@/lib/types';
 import { QUERY_MESSAGES } from '@/lib/constants/queryMessages';
 import { handleServiceError } from '@/lib/utils/errorHandler';
 
-const LIMIT = 3;
+const DEFAULT_MEMORY_SEARCH_LIMIT = 8;
+
+function getMemorySearchLimit(): number {
+  const configuredLimit = Number(process.env.MEMORY_SEARCH_LIMIT);
+
+  if (Number.isFinite(configuredLimit) && configuredLimit > 0) {
+    return Math.floor(configuredLimit);
+  }
+
+  return DEFAULT_MEMORY_SEARCH_LIMIT;
+}
 
 export class QueryService {
   private storage: StorageProvider;
@@ -24,11 +34,13 @@ export class QueryService {
 
   async query(userId: string, query: string): Promise<ServiceResponse> {
     try {
+      const searchLimit = getMemorySearchLimit();
+
       // 1. mem0 search
       const searchResults = await this.memory.searchMemory(
         userId,
         query,
-        LIMIT,
+        searchLimit,
       );
 
       if (searchResults.length === 0) {
@@ -39,11 +51,13 @@ export class QueryService {
       }
 
       // 2. LLM generates answer
-      const memories = searchResults.reduce((acc: Memory[], curr, idx) => {
-        if (curr.memory && idx < LIMIT) acc.push(curr.memory);
+      const memories = searchResults.reduce((acc: Memory[], curr) => {
+        if (curr.memory) acc.push(curr.memory);
         return acc;
       }, []);
-      const answer = await this.llm.generateAnswer(query, memories);
+
+      const memoryContents = memories.map((m) => m.content);
+      const answer = await this.llm.generateAnswer(query, memoryContents);
 
       // 3. Get original message sources
       const sources = await Promise.all(
